@@ -93,10 +93,10 @@ module.exports = {
     // (e.g., from a .env file) during the build process.
     // It's good practice to not hardcode production secrets here.
     // process.env.VARIABLE_NAME is how Expo accesses them.
-    EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL,
-    EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY,
-    EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
-    EXPO_PUBLIC_SITE_URL: process.env.EXPO_PUBLIC_SITE_URL,
+    EXPO_PUBLIC_SUPABASE_URL: process.env.EXPO_PUBLIC_SUPABASE_URL || "https://ujaafvzorxllabjtixip.supabase.co",
+    EXPO_PUBLIC_SUPABASE_ANON_KEY: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVqYWFmdnpvcnhsbGFianRpeGlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA0MTU0MDgsImV4cCI6MjA1NTk5MTQwOH0.vaaMirlhfeojVTeXSWHBW18OhobBRcNHRVFX5olOVFY",
+    EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL || "https://sikumai-production.up.railway.app",
+    EXPO_PUBLIC_SITE_URL: process.env.EXPO_PUBLIC_SITE_URL || "https://sikumai.com",
     EXPO_PUBLIC_APP_STORE_URL: process.env.EXPO_PUBLIC_APP_STORE_URL || "YOUR_APP_STORE_URL_PLACEHOLDER",
     EXPO_PUBLIC_FEEDBACK_URL: process.env.EXPO_PUBLIC_FEEDBACK_URL || "YOUR_FEEDBACK_URL_PLACEHOLDER"
   },
