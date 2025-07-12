@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Get the port from environment, default to 3000 if not set
 PORT=${PORT:-3000}
