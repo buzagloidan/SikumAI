@@ -24,15 +24,16 @@ COPY . .
 # Create web-build directory
 RUN mkdir -p web-build
 
-# Try expo export first (with timeout)
-RUN echo "=== Attempting Expo Export ===" && \
-    timeout 300 npx expo export --platform web --output-dir web-build || \
-    echo "Expo export failed or timed out"
+# Use webpack build approach
+RUN echo "=== Building with Webpack ===" && \
+    timeout 300 npx webpack --mode=production --output-path=web-build || \
+    echo "Webpack build failed or timed out"
 
-# If expo export didn't work, try npm build
+# If webpack didn't work, try expo export
 RUN if [ ! -f "web-build/index.html" ]; then \
-      echo "=== Trying npm build ===" && \
-      npm run build:web || echo "npm build failed"; \
+      echo "=== Trying Expo Export ===" && \
+      timeout 300 npx expo export --platform web --output-dir web-build || \
+      echo "Expo export failed or timed out"; \
     fi
 
 # If still no index.html, create a basic one with public assets
