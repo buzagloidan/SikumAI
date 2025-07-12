@@ -1834,5 +1834,6 @@ def get_user_quizzes():
 
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5001))
-    app.logger.info(f"Starting Flask app on port {port}")
-    app.run(host='0.0.0.0', port=port, debug=True) 
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
+    app.logger.info(f"Starting Flask app on port {port}, debug={debug_mode}")
+    app.run(host='0.0.0.0', port=port, debug=debug_mode) 
