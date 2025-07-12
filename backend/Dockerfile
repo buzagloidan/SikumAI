@@ -28,7 +28,7 @@ ENV PYTHONUNBUFFERED=1
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
-# Run the application
-CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:${PORT:-8080} --workers 2 --timeout 300"] 
+# Run the application using Python directly to handle PORT properly
+CMD ["python", "app.py"] 
