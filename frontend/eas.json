@@ -1,0 +1,103 @@
+{
+  "cli": {
+    "version": ">= 3.13.3",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "cache": {
+        "disabled": false,
+        "key": "sikumai-cache-v1"
+      },
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+      },
+      "node": "18.18.2",
+      "ios": {
+        "resourceClass": "m-medium"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "cache": {
+        "disabled": false,
+        "key": "sikumai-cache-v1"
+      },
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+      },
+      "node": "18.18.2",
+      "ios": {
+        "resourceClass": "m-medium",
+        "simulator": false
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "autoIncrement": true,
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096",
+        "EAS_NO_VCS": "1"
+      },
+      "node": "18.18.2",
+      "ios": {
+        "resourceClass": "m-medium",
+        "image": "latest",
+        "buildConfiguration": "Release",
+        "simulator": false,
+        "scheme": "SikumAI"
+      },
+      "prebuildCommand": "./clean-build.sh",
+      "android": {
+        "buildType": "app-bundle",
+        "gradleCommand": ":app:bundleRelease"
+      },
+      "cache": {
+        "key": "production-v5"
+      },
+      "releaseChannel": "production"
+    },
+    "test": {
+      "autoIncrement": true,
+      "cache": {
+        "disabled": true
+      },
+      "env": {
+        "NODE_OPTIONS": "--max-old-space-size=4096"
+      },
+      "extends": "production",
+      "prebuildCommand": "echo 'Simplified build for testing'"
+    },
+    "minimal": {
+      "distribution": "internal",
+      "autoIncrement": true,
+      "cache": {
+        "disabled": true
+      },
+      "node": "18.18.2",
+      "ios": {
+        "resourceClass": "m-medium",
+        "image": "latest"
+      },
+      "prebuildCommand": "echo 'MINIMAL_BUILD=true' > .env.local && echo 'Preparing minimal build'"
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "buzagloidan@gmail.com",
+        "ascAppId": "6743373915",
+        "appleTeamId": "ZADSZ6HP53"
+      }
+    },
+    "preview": {
+      "ios": {
+        "appleId": "buzagloidan@gmail.com",
+        "ascAppId": "6743373915",
+        "appleTeamId": "ZADSZ6HP53"
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+[variables]
+NIXPACKS_PYTHON_VERSION = "3.11"
+PYTHONUNBUFFERED = "1"
+
+[phases.build]
+dependsOn = ["install"]
+cmds = ["echo 'Build phase completed'"]
+
+[phases.install]
+cmds = ["pip install -r requirements.txt"]
+
+[start]
+cmd = "gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 300" 
