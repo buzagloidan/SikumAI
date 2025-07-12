@@ -33,32 +33,34 @@ app = Flask(__name__)
 # Configure maximum file size (50MB)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB in bytes
 
-# Initialize rate limiter with fallback
-try:
+# Initialize rate limiter with robust Redis fallback
+def init_rate_limiter():
+    """Initialize rate limiter with Redis, fallback to memory if Redis fails."""
     redis_url = os.getenv("REDIS_URL")
+    
+    # Test Redis connection first before using it
     if redis_url:
-        # Try to use Redis if available
-        limiter = Limiter(
-            get_remote_address,
-            app=app,
-            default_limits=["400 per day", "100 per hour"],
-            storage_uri=redis_url,
-            strategy="fixed-window",
-        )
-        app.logger.info("Rate limiter initialized with Redis")
-    else:
-        # Fallback to in-memory storage
-        limiter = Limiter(
-            get_remote_address,
-            app=app,
-            default_limits=["400 per day", "100 per hour"],
-            storage_uri="memory://",
-            strategy="fixed-window",
-        )
-        app.logger.warning("Rate limiter initialized with in-memory storage (Redis not available)")
-except Exception as e:
-    # If Redis fails, use in-memory storage
-    app.logger.error(f"Failed to initialize Redis rate limiter: {e}")
+        try:
+            import redis
+            # Test the connection
+            r = redis.from_url(redis_url, socket_connect_timeout=5, socket_timeout=5)
+            r.ping()  # This will raise an exception if Redis is not available
+            
+            # If we get here, Redis is working
+            limiter = Limiter(
+                get_remote_address,
+                app=app,
+                default_limits=["400 per day", "100 per hour"],
+                storage_uri=redis_url,
+                strategy="fixed-window",
+            )
+            app.logger.info(f"Rate limiter successfully initialized with Redis: {redis_url}")
+            return limiter
+        except Exception as redis_error:
+            app.logger.warning(f"Redis connection test failed: {redis_error}")
+            app.logger.warning("Falling back to in-memory rate limiting")
+    
+    # Use in-memory storage as fallback
     limiter = Limiter(
         get_remote_address,
         app=app,
@@ -66,7 +68,23 @@ except Exception as e:
         storage_uri="memory://",
         strategy="fixed-window",
     )
-    app.logger.warning("Rate limiter fallback to in-memory storage")
+    app.logger.info("Rate limiter initialized with in-memory storage")
+    return limiter
+
+# Initialize the rate limiter
+try:
+    limiter = init_rate_limiter()
+except Exception as e:
+    # Last resort fallback
+    app.logger.error(f"Failed to initialize any rate limiter: {e}")
+    limiter = Limiter(
+        get_remote_address,
+        app=app,
+        default_limits=["400 per day", "100 per hour"],
+        storage_uri="memory://",
+        strategy="fixed-window",
+    )
+    app.logger.warning("Using last resort in-memory rate limiter")
 
 # Define allowed origins
 ALLOWED_ORIGINS = [
