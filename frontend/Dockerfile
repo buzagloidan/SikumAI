@@ -14,15 +14,20 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install --force
 
+# Install Expo CLI for web builds
+RUN npm install -g @expo/cli
+
 # Copy the rest of the app
 COPY . .
 
 # Try different build approaches
-RUN echo "Attempting Expo web build..." && \
-    (npx expo export --platform web --output-dir web-build || \
+RUN echo "Attempting npm build:web..." && \
+    (NODE_ENV=production npm run build:web || \
+     echo "npm build:web failed, trying expo export..." && \
+     NODE_ENV=production npx expo export --platform web --output-dir web-build || \
      echo "Expo export failed, trying webpack..." && \
-     npx webpack --mode production --output-path web-build || \
-     echo "Webpack failed, creating basic build..." && \
+     NODE_ENV=production npx webpack --mode=production || \
+     echo "All builds failed, creating basic build..." && \
      mkdir -p web-build && \
      cp -r public/* web-build/ 2>/dev/null || echo "No public folder" && \
      echo '<!DOCTYPE html><html><head><title>SikumAI</title></head><body><h1>SikumAI Frontend</h1><p>Connecting to backend...</p></body></html>' > web-build/index.html)
