@@ -1109,8 +1109,7 @@ export default function HomeScreen() {
                   Linking.openURL(appStoreUrl);
                 }}
               >
-                <Text style={styles.appStoreButtonText}>הורד מ-App Store</Text>
-                <Text style={styles.appStoreButtonText}>📱</Text>
+                <Text style={styles.appStoreButtonText}>הורד עכשיו</Text>
               </TouchableOpacity>
             )}
           </View>
