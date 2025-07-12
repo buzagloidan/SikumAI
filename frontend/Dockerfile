@@ -20,6 +20,9 @@ RUN npm install -g serve
 # Expose port (Railway will override this with $PORT)
 EXPOSE 3000
 
-# Set the command to serve the web build
-# Railway will automatically bind to $PORT
-CMD ["sh", "-c", "serve -s web-build -l ${PORT:-3000}"] 
+# Copy and make the startup script executable
+COPY start.sh .
+RUN chmod +x start.sh
+
+# Set the command to use our startup script
+CMD ["./start.sh"] 
