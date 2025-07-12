@@ -34,8 +34,9 @@ RUN npm install -g serve
 EXPOSE 3000
 
 # Copy and make the startup script executable
-COPY start.sh .
-RUN chmod +x start.sh
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh
 
-# Set the command to use our startup script
-CMD ["./start.sh"] 
+# Alternative: use serve directly if script fails
+# Set the command to use our startup script with fallback
+CMD ["/bin/sh", "-c", "/app/start.sh || serve -s web-build -l ${PORT:-3000}"] 
