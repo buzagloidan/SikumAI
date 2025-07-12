@@ -19,4 +19,10 @@ config.transformer = {
   assetPlugins: ['expo-asset/tools/hashAssetFiles']
 };
 
+// Disable static rendering for web
+config.web = {
+  ...config.web,
+  staticRenderingEnabled: false
+};
+
 module.exports = config;

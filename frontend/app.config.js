@@ -70,7 +70,8 @@ module.exports = {
   web: {
     favicon: "./assets/favicon.png",
     bundler: "metro",
-    output: "static",
+    output: "single",
+    staticRenderingEnabled: false,
     build: {
       babel: {
         include: [

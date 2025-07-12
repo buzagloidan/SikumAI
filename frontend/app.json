@@ -1,0 +1,25 @@
+{
+  "expo": {
+    "name": "SikumAI",
+    "slug": "sikumai",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/expo-splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "assets/*.png"
+    ],
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single",
+      "staticRenderingEnabled": false
+    },
+    "platforms": ["ios", "android", "web"]
+  }
+} 
