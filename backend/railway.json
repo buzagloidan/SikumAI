@@ -5,10 +5,10 @@
   },
   "deploy": {
     "numReplicas": 1,
-    "startCommand": "python app.py",
+    "startCommand": "gunicorn --bind 0.0.0.0:$PORT --workers 1 --timeout 300 --log-level info app:app",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5,
     "healthcheckPath": "/health",
-    "healthcheckTimeout": 10
+    "healthcheckTimeout": 15
   }
 } 

@@ -33,14 +33,40 @@ app = Flask(__name__)
 # Configure maximum file size (50MB)
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB in bytes
 
-# Initialize rate limiter
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["400 per day", "100 per hour"],
-    storage_uri=os.getenv("REDIS_URL", "redis://localhost:6379"),  # Default to local Redis if not configured
-    strategy="fixed-window",  # Use fixed window strategy for simplicity
-)
+# Initialize rate limiter with fallback
+try:
+    redis_url = os.getenv("REDIS_URL")
+    if redis_url:
+        # Try to use Redis if available
+        limiter = Limiter(
+            get_remote_address,
+            app=app,
+            default_limits=["400 per day", "100 per hour"],
+            storage_uri=redis_url,
+            strategy="fixed-window",
+        )
+        app.logger.info("Rate limiter initialized with Redis")
+    else:
+        # Fallback to in-memory storage
+        limiter = Limiter(
+            get_remote_address,
+            app=app,
+            default_limits=["400 per day", "100 per hour"],
+            storage_uri="memory://",
+            strategy="fixed-window",
+        )
+        app.logger.warning("Rate limiter initialized with in-memory storage (Redis not available)")
+except Exception as e:
+    # If Redis fails, use in-memory storage
+    app.logger.error(f"Failed to initialize Redis rate limiter: {e}")
+    limiter = Limiter(
+        get_remote_address,
+        app=app,
+        default_limits=["400 per day", "100 per hour"],
+        storage_uri="memory://",
+        strategy="fixed-window",
+    )
+    app.logger.warning("Rate limiter fallback to in-memory storage")
 
 # Define allowed origins
 ALLOWED_ORIGINS = [
@@ -1199,11 +1225,20 @@ def get_user_statistics():
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 @app.route('/health', methods=['GET'])
-@limiter.limit("1000 per day")
 @add_cors_headers
 def health_check():
-    """Health check endpoint."""
-    return jsonify({"status": "healthy"}), 200
+    """Health check endpoint - no rate limiting to ensure Railway health checks work."""
+    try:
+        # Simple health check without external dependencies
+        return jsonify({
+            "status": "healthy",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "port": os.getenv('PORT', 'not_set'),
+            "redis_available": bool(os.getenv("REDIS_URL"))
+        }), 200
+    except Exception as e:
+        app.logger.error(f"Health check error: {e}")
+        return jsonify({"status": "unhealthy", "error": str(e)}), 500
 
 @app.route('/ping', methods=['GET'])
 @limiter.limit("1000 per day")
@@ -1833,7 +1868,15 @@ def get_user_quizzes():
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 if __name__ == '__main__':
+    # Get port from environment - Railway sets this
     port = int(os.getenv('PORT', 5001))
     debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() == 'true'
-    app.logger.info(f"Starting Flask app on port {port}, debug={debug_mode}")
+    
+    # Log environment info for debugging
+    app.logger.info(f"Environment PORT: {os.getenv('PORT', 'NOT_SET')}")
+    app.logger.info(f"Using port: {port}")
+    app.logger.info(f"Debug mode: {debug_mode}")
+    app.logger.info(f"Redis URL: {os.getenv('REDIS_URL', 'NOT_SET')}")
+    
+    # Start the Flask app
     app.run(host='0.0.0.0', port=port, debug=debug_mode) 
