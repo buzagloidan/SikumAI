@@ -26,18 +26,20 @@ RUN echo "Building React Native web app..." && \
     mkdir -p web-build && \
     echo "Attempting expo export for web..." && \
     (npx expo export --platform web --output-dir web-build && \
-     echo "Expo export successful, copying public assets..." && \
+     echo "✅ Expo export successful!" && \
      cp -r public/* web-build/ 2>/dev/null || echo "No additional public assets to copy") || \
-    (echo "Expo export failed, trying npm build script..." && \
+    (echo "❌ Expo export failed, trying npm build script..." && \
      npm run build:web && \
-     echo "npm build successful, copying public assets..." && \
+     echo "✅ npm build successful!" && \
      cp -r public/* web-build/ 2>/dev/null || echo "No additional public assets to copy") || \
-    (echo "All builds failed, creating fallback with public assets..." && \
+    (echo "❌ All builds failed, creating fallback with public assets..." && \
      mkdir -p web-build && \
      cp -r public/* web-build/ 2>/dev/null || echo "No public folder found" && \
      echo '<!DOCTYPE html><html><head><title>SikumAI</title><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body><div id="root"><h1>SikumAI Loading...</h1><p>If this persists, please check the deployment.</p></div></body></html>' > web-build/index.html) && \
     echo "Build completed, checking output..." && \
-    ls -la web-build/
+    ls -la web-build/ && \
+    echo "Checking if we have an index.html file..." && \
+    ls -la web-build/index.html || echo "No index.html found"
 
 # Install serve to run the static files
 RUN npm install -g serve

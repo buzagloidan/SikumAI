@@ -9,7 +9,14 @@ config.resolver = {
   extraNodeModules: {
     ...config.resolver.extraNodeModules,
     'base64url': path.resolve(__dirname, 'node_modules/base64url')
-  }
+  },
+  platforms: ['ios', 'android', 'web']
+};
+
+// Enable web support
+config.transformer = {
+  ...config.transformer,
+  assetPlugins: ['expo-asset/tools/hashAssetFiles']
 };
 
 module.exports = config;

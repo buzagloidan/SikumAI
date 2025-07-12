@@ -69,7 +69,7 @@ module.exports = {
   },
   web: {
     favicon: "./assets/favicon.png",
-    bundler: "webpack",
+    bundler: "metro",
     output: "static",
     build: {
       babel: {
