@@ -68,13 +68,15 @@ module.exports = {
     ]
   },
   web: {
-    favicon: "./public/favicon.png",
+    favicon: "./assets/favicon.png",
     bundler: "webpack",
+    output: "static",
     build: {
       babel: {
         include: [
           "node_modules/@expo/vector-icons",
-          "node_modules/react-native-svg"
+          "node_modules/react-native-svg",
+          "node_modules/react-native-web"
         ]
       }
     }
